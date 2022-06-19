@@ -1,6 +1,7 @@
 import sys
 import pygame
 from bullet import Bullet
+from alien import Alien
 
 
 def check_keydown_events(event, ai_settings, screen, ship, bullets):
@@ -43,7 +44,7 @@ def check_events(ai_settings, screen, ship, bullets):
             check_keyup_events(event, ship)
 
 
-def update_screen(ai_settings, screen, ship, bullets, alien):
+def update_screen(ai_settings, screen, ship, bullets, aliens):
     """Обновляет изображения на экране и отображает
     новый экран с учетом новых позиций игровых элементов"""
 
@@ -54,8 +55,8 @@ def update_screen(ai_settings, screen, ship, bullets, alien):
         bullet.draw_bullet()
     # Выводим корабль на экран
     ship.blitme()
-    # Выводим пришельца на экран
-    alien.blitme()
+    # Выводим пришельцев на экран
+    aliens.draw(screen)
     # Отображение последнего прорисованного экрана
     pygame.display.flip()
 
@@ -74,8 +75,29 @@ def update_bullets(bullets):
 
 def fire_bullet(ai_settings, screen, ship, bullets):
     """Выпускает пулю, если максимум еще не достигнут."""
+
     # Создание новой пули и включение ее в группу bullets
     # После проверки количества активных пуль "bullets_allowed"
     if len(bullets) < ai_settings.bullets_allowed:
         new_bullet = Bullet(ai_settings, screen, ship)
         bullets.add(new_bullet)
+
+
+def create_fleet(ai_settings, screen, aliens):
+    """Создает флот пришельцев."""
+
+    # Создание пришельца и вычисление количества пришельцев в ряду.
+    # Интервал между соседними пришельцами равен одной ширине пришельца.
+    alien = Alien(ai_settings, screen)
+    alien_width = alien.rect.width
+    available_space_x = ai_settings.screen_width - 2 * alien_width
+    number_aliens_x = int(available_space_x / (2 * alien_width))
+
+    # Создание первого ряда пришельцев.
+    for alien_number in range(number_aliens_x):
+        # Создание пришельца и размещение его в ряду.
+        alien = Alien(ai_settings, screen)
+        alien.x = alien_width + 2 * alien_width * alien_number
+        alien.rect.x = alien.x
+        aliens.add(alien)
+
