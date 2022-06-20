@@ -44,7 +44,7 @@ def check_events(ai_settings, screen, ship, bullets):
             check_keyup_events(event, ship)
 
 
-def update_screen(ai_settings, screen, ship, bullets, aliens):
+def update_screen(ai_settings, screen, ship, aliens, bullets):
     """Обновляет изображения на экране и отображает
     новый экран с учетом новых позиций игровых элементов"""
 
@@ -61,7 +61,7 @@ def update_screen(ai_settings, screen, ship, bullets, aliens):
     pygame.display.flip()
 
 
-def update_bullets(bullets, aliens):
+def update_bullets(ai_settings, screen, ship, aliens, bullets):
     """Обновляет позиции пуль и уничтожает старые пули
     которые вышли за предел экрана."""
 
@@ -71,9 +71,19 @@ def update_bullets(bullets, aliens):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+
+
+def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+    """Обработка коллизий пуль с пришельцами."""
+
     # Проверка попаданий в пришельцев.
     # При обнаружении попадания удалить пулю и пришельца.
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if len(aliens) == 0:
+        # Уничтожение существующих пуль и создание нового флота.
+        bullets.empty()
+        create_fleet(ai_settings, screen, ship, aliens)
 
 
 def fire_bullet(ai_settings, screen, ship, bullets):
