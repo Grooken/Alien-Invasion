@@ -13,6 +13,9 @@ class Settings:
         # Настройки корабля
         self.ship_speed_factor = 1.5  # Скорость перемещения
 
+        # Настройки пришельцев
+        self.alien_speed_factor = 1
+
         # Параметры пули
         self.bullet_speed_factor = 1
         self.bullet_width = 3
