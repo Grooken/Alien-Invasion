@@ -12,6 +12,7 @@ class Settings:
 
         # Настройки корабля
         self.ship_speed_factor = 1.5  # Скорость перемещения
+        self.ship_limit = 3
 
         # Настройки пришельцев
         self.alien_speed_factor = 0.2
