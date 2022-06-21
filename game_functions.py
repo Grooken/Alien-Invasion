@@ -30,7 +30,7 @@ def check_keyup_events(event, ship):
         ship.moving_left = False
 
 
-def check_events(ai_settings, screen, ship, bullets):
+def check_events(ai_settings, screen, stats, play_button, ship, bullets):
     """Обрабатывает нажатия клавиш и события мыши"""
 
     for event in pygame.event.get():
@@ -43,9 +43,21 @@ def check_events(ai_settings, screen, ship, bullets):
         # Действия при отжатии клавиши
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
+        # Отслеживает действия мыши в заданной области (области кнопки "Play")
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(stats, play_button, mouse_x, mouse_y)
 
 
-def update_screen(ai_settings, screen, ship, aliens, bullets):
+def check_play_button(stats, play_button, mouse_x, mouse_y):
+    """Запускает новую игру при нажатии кнопки Play."""
+
+    if play_button.rect.collidepoint(mouse_x, mouse_y):
+        stats.game_active = True
+
+
+def update_screen(ai_settings, screen, stats, ship, aliens, bullets,
+                  play_button):
     """Обновляет изображения на экране и отображает
     новый экран с учетом новых позиций игровых элементов"""
 
@@ -58,6 +70,9 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
     ship.blitme()
     # Выводим пришельцев на экран
     aliens.draw(screen)
+    # Кнопка Play отображается в том случае, если игра неактивна.
+    if not stats.game_active:
+        play_button.draw_button()
     # Отображение последнего прорисованного экрана
     pygame.display.flip()
 
