@@ -30,7 +30,7 @@ def run_game():
     # Запуск основного цикла игры.
     while True:
         gf.check_events(ai_settings, screen, stats, play_button,
-                        ship, bullets)
+                        ship, aliens, bullets)
 
         if stats.game_active:
             ship.update()
