@@ -72,7 +72,7 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens,
         ship.center_ship()
 
 
-def update_screen(ai_settings, screen, stats, ship, aliens, bullets,
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets,
                   play_button):
     """Обновляет изображения на экране и отображает
     новый экран с учетом новых позиций игровых элементов"""
@@ -86,6 +86,8 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets,
     ship.blitme()
     # Выводим пришельцев на экран
     aliens.draw(screen)
+    # Вывод счета.
+    sb.show_score()
     # Кнопка Play отображается в том случае, если игра неактивна.
     if not stats.game_active:
         play_button.draw_button()
@@ -93,9 +95,8 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets,
     pygame.display.flip()
 
 
-def update_bullets(ai_settings, screen, ship, aliens, bullets):
-    """Обновляет позиции пуль и уничтожает старые пули
-    которые вышли за предел экрана."""
+def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
+    """Обновляет позиции пуль и удаляет старые пули"""
 
     # Обновление позиций пуль.
     bullets.update()
@@ -103,15 +104,25 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+    check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship,
+                                  aliens, bullets)
 
 
-def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship,
+                                  aliens, bullets):
     """Обработка коллизий пуль с пришельцами."""
 
     # Проверка попаданий в пришельцев.
-    # При обнаружении попадания удалить пулю и пришельца.
+    # При обнаружении попаданий (коллизий) удалить пулю и пришельца.
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
+    # Увеличение счета при попаданиях (коллизиях)
+    if collisions:
+        for aliens in collisions.values():
+            stats.score += ai_settings.alien_points * len(aliens)
+            sb.prep_score()
+            check_high_score(stats, sb)
+
     if len(aliens) == 0:
         # Уничтожение существующих пуль, повышение скорости
         # и создание нового флота.
@@ -241,3 +252,11 @@ def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
 
     # Проверка пришельцев, добравшихся до нижнего края экрана.
     check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
+
+
+def check_high_score(stats, sb):
+    """Проверяет, появился ли новый рекорд."""
+
+    if stats.score > stats.high_score:
+        stats.high_score = stats.score
+        sb.prep_high_score()
