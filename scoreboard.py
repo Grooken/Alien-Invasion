@@ -49,7 +49,7 @@ class Scoreboard:
         """Преобразует рекордный счет в графическое изображение."""
 
         high_score = int(round(self.stats.high_score, -1))
-        high_score_str = "{:,}".format(high_score)
+        high_score_str = "Best: " + "{:,}".format(high_score)
         self.high_score_image = self.font.render(high_score_str, True,
                                                  self.text_color,
                                                  self.ai_settings.bg_color)
@@ -63,7 +63,7 @@ class Scoreboard:
 
         score_str = str(self.stats.score)
         rounded_score = int(round(self.stats.score, -1))
-        score_str = "{:,}".format(rounded_score)
+        score_str = "Score: " + "{:,}".format(rounded_score)
 
         self.score_image = self.font.render(score_str, True, self.text_color,
                                             self.ai_settings.bg_color)
